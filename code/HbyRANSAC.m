@@ -40,7 +40,6 @@ while ( N > smpl_cnt ) ;
 		pt2_convert = pt2_c1(1:2,:) / pt2_c1(3,:);
 		
 		d_error = sum( (pt1-pt2_convert).^2) + sum((pt2-pt1_convert).^2 ) ;
-		% fprintf('%f\n', d_error);
 		if d_error < t;
 			cnt_inliers = cnt_inliers + 1;
 		end
@@ -53,23 +52,14 @@ while ( N > smpl_cnt ) ;
 
 	if cnt_inliers ~= 0;
 		epsilon = 1 - cnt_inliers/size(matches, 2) ;
-		% N = log(1-p)/log(1-(1-epsilon)^n_subset);
-		N = log(1-p)/log(1-(1-epsilon)^2);
-		fprintf('N = %f\n', N);
+		N = log(1-p)/log(1-(1-epsilon)^n_subset);
+		% fprintf('N = %f\n', N);
 	end
-	if cnt_inliers == 0;
-		fprintf('fffffffff\n');
-
-	end
+	% if cnt_inliers == 0;
+	% 	fprintf('fffffffff\n');
+	% end
 	smpl_cnt = smpl_cnt + 1;
 end
 
-
 end
-
-		% pt1_homo = [pt1; ones(1, size(pt1,2))] ;
-		% pt2_homo = [pt2; ones(1, size(pt2,2))] ;
-		% d_error = zeros( size(pt1,2) );
-		% pt1_convert = pt1_c1(1:2,:) ./ [pt1_c1(3,:); pt1_c1(3,:)] ;
-		% d_error = pdist( [pt2(:,i)' ; pt1_convert(:,i)' ], 'euclidean')^2 + pdist( [pt1(:,i)' ; pt2_convert(:,i)' ], 'euclidean' )^2 ;
 

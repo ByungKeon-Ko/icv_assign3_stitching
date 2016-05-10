@@ -1,18 +1,12 @@
 
-run('~/matlab_lib/vlfeat-0.9.20/toolbox/vl_setup');
+% run('~/matlab_lib/vlfeat-0.9.20/toolbox/vl_setup');
 
-%% 1. Taking panoramic pictures
+%% ============ 1. Taking panoramic pictures ============== %
 im1 = imread('../../images/img1.jpg');
 im2 = imread('../../images/img2.jpg');
 im3 = imread('../../images/img3.jpg');
 im4 = imread('../../images/img4.jpg');
 im5 = imread('../../images/img5.jpg');
-
-% im1 = imread('/home/mschoi/icv_homework/icv_assign3/ref_code/img1.jpg');
-% im2 = imread('/home/mschoi/icv_homework/icv_assign3/ref_code/img2.jpg');
-% im3 = imread('/home/mschoi/icv_homework/icv_assign3/ref_code/img3.jpg');
-% im4 = imread('/home/mschoi/icv_homework/icv_assign3/ref_code/img4.jpg');
-% im5 = imread('/home/mschoi/icv_homework/icv_assign3/ref_code/img5.jpg');
 
 im1_resize = imresize( im1, [256,256] );
 im2_resize = imresize( im2, [256,256] );
@@ -21,7 +15,7 @@ im4_resize = imresize( im4, [256,256] );
 im5_resize = imresize( im5, [256,256] );
 
 fprintf('step1 done\n');
-%% 2. Feature Extraction
+%% ============= 2. Feature Extraction ========== %%
 im1_gray = rgb2gray( im1_resize );
 im2_gray = rgb2gray( im2_resize );
 im3_gray = rgb2gray( im3_resize );
@@ -43,7 +37,7 @@ I5 = single(im5_gray );
 fprintf('# of descriptors : %d,%d,%d,%d,%d\n', size(f1,2), size(f2,2), size(f3,2), size(f4,2), size(f5,2) );
 
 fprintf('step2 done\n');
-%% 3. Feature Matching
+%% =============== 3. Feature Matching ============= %%
 THRESH = 1.5 ;
 [matches12, scores12] = vl_ubcmatch(d1, d2, THRESH) ;
 [matches23, scores23] = vl_ubcmatch(d2, d3, THRESH) ;
@@ -56,21 +50,17 @@ THRESH = 1.5 ;
 %title('Correspondence graph of image 1 & image 2')
 
 fprintf('step3 done\n');
-%% 4. Homography Estimation using RANSAC
+%% ============= 4. Homography Estimation using RANSAC  ============ %
 H12 = HbyRANSAC( matches12, f1, f2) ;
 H23 = HbyRANSAC( matches23, f2, f3) ;
 H34 = HbyRANSAC( matches34, f3, f4) ;
 H45 = HbyRANSAC( matches45, f4, f5) ;
 
-%% 5. Warping Images
+fprintf('step4 done\n');
+%% =========== 5. Warping Images ================ %
 % tform12 = projective2d(H);
 tform12 = maketform('projective', H12');
 [im1_proj, x_data, y_data] = imtransform( im1_resize, tform12);
-
-% [pano12, ~, ~] = MergeImage( im1_resize, im2_resize, H12 );
-% [pano123, ~, ~] = MergeImage( pano12, im3_resize, H23 );
-% [pano54, ~, ~] = MergeImage( im5_resize, im4_resize, inv(H45) );
-% [pano12345, ~, ~] = MergeImage( pano54, pano123, inv(H34) );
 
 %% Projective Transform each images
 tform = maketform('projective', H12'*H23');
